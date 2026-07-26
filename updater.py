@@ -27,7 +27,7 @@ USER_AGENT    = "exaroton-mod-updater/1.0"
 VERSION_TYPE_SUFFIX = {
     "release": "",
     "beta":    " [BETA]",
-    "alpha":   " [ALPHA]",
+    "alpha":   " [ALPHA]", 
 }
 
 # ANSI helpers
