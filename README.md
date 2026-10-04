@@ -43,6 +43,36 @@ python updater.py --token <TOKEN> --server-id <ID> --game-version 26.2 --update
 
 ---
 
+## upgrader.py — Upgrade all mods to a new Minecraft version
+
+Moves a whole server from one Minecraft version to another (e.g. `1.20.1` → `1.21.1`).
+
+The upgrader answers one question: **can** this server upgrade? Every installed mod is looked up on Modrinth and checked for a build that supports the target Minecraft version *and* the target loader. The upgrade is **only allowed when all mods have a compatible build** — a single missing mod blocks the entire upgrade, so the server can never end up half-upgraded. If it is blocked, nothing is changed.
+
+**How it works:**
+1. Downloads the server's `mods/` directory as a ZIP
+2. Hashes every `.jar` and looks it up on Modrinth to identify the installed version
+3. Looks up each mod's build for the target Minecraft version + loader
+4. Reports a compatibility verdict — only with `--upgrade` are jars downloaded, uploaded and old ones removed (prompts **per mod**)
+
+```bash
+python upgrader.py --token <TOKEN> --server-id <ID> --to-version 1.21.1
+python upgrader.py --token <TOKEN> --server-id <ID> --to-version 1.21.1 --upgrade
+```
+
+| Argument | Required | Description |
+|---|---|---|
+| `--token` | ✅ | Exaroton API token |
+| `--server-id` | ✅ | Your server's ID |
+| `--to-version` | ✅ | Minecraft version to upgrade to, e.g. `1.21.1` |
+| `--from-version` | ❌ | Current MC version, used for display only |
+| `--loader` | ❌ | Mod loader: `fabric` (default), `forge`, `neoforge`, `quilt` |
+| `--upgrade` | ❌ | Apply the upgrade once every mod is verified |
+
+> A mod that isn't on Modrinth can't be verified and counts as a blocker, as does a mod with no build for the target version/loader. Remove or replace those manually before upgrading. Exit code is `1` when the upgrade is blocked.
+
+---
+
 ## uploader.py — Upload local mods to the server
 
 Syncs new mods from a local profile directory to the server. Reads `fabric.mod.json` from each `.jar` to check the mod's target environment — only mods with environment `*` or `server` are uploaded. Mods whose mod ID is already present on the server are skipped.
